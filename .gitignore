@@ -1,0 +1,37 @@
+# Ambiente virtual
+.venv/
+venv/
+ENV/
+env/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Logs
+*.log
+
+# Arquivos de banco local (SQLite)
+*.sqlite3
+*.db
+
+# Arquivos do PyCharm
+.idea/
+
+# Arquivos temporários
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Credenciais ou chaves locais (caso use)
+*.env
+.env
+
+# Arquivos de build (caso futuramente tenha)
+build/
+dist/
+*.egg-info/
