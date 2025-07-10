@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Monitoramento de Conexão</title>
+  <link rel="stylesheet" href="estilos.css" />
+  <style>
+    .tabela-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .ativo {
+      display: block;
+    }
+
+    button {
+      margin: 10px 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .paginacao {
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Monitoramento de Conexão</h1>
+
+  <div>
+    <button onclick="mostrarTabela('logs')">Logs</button>
+    <button onclick="mostrarTabela('speedtest')">Speedtest</button>
+  </div>
+
+  <div id="logs" class="tabela-container">
+    <h2>Logs de Conexão</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>ID</th>
+          <th>Mensagem</th>
+          <th>Nível</th>
+          <th>Origem</th>
+          <th>Evento ID</th>
+        </tr>
+      </thead>
+      <tbody id="dados-tabela-logs"></tbody>
+    </table>
+    <div class="paginacao">
+      <button onclick="paginaAnteriorLogs()">Anterior</button>
+      <button onclick="proximaPaginaLogs()">Próxima</button>
+    </div>
+  </div>
+
+  <div id="speedtest" class="tabela-container">
+    <h2>Resultados da Conexão (Speedtest)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Ping</th>
+          <th>Download</th>
+          <th>Upload</th>
+        </tr>
+      </thead>
+      <tbody id="dados-tabela-speedtest"></tbody>
+    </table>
+    <div class="paginacao">
+      <button onclick="paginaAnteriorSpeed()">Anterior</button>
+      <button onclick="proximaPaginaSpeed()">Próxima</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="script.js"></script>
+  <script>
+    let tabelaAtualVisivel = null;
+
+    function mostrarTabela(id) {
+      const logs = document.getElementById('logs');
+      const speedtest = document.getElementById('speedtest');
+
+      if (tabelaAtualVisivel === id) {
+        document.getElementById(id).classList.remove('ativo');
+        tabelaAtualVisivel = null;
+        return;
+      }
+
+      logs.classList.remove('ativo');
+      speedtest.classList.remove('ativo');
+
+      document.getElementById(id).classList.add('ativo');
+      tabelaAtualVisivel = id;
+
+      if (id === 'logs') {
+        carregarLogs(paginaLogs);
+      } else if (id === 'speedtest') {
+        carregarSpeedtest(paginaSpeed);
+      }
+    }
+  </script>
+</body>
+</html>
