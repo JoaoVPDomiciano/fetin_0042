@@ -1,10 +1,11 @@
 import requests
 
 SUPABASE_URL = "https://epruvcgigotpcptjaqyr.supabase.co"
-SUPABASE_KEY = "your_supabase_key_here"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwcnV2Y2dpZ290cGNwdGphcXlyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njk2MzcxMywiZXhwIjoyMDYyNTM5NzEzfQ.zIA2LO93He3kKRYhSv52w0GxoEFV9ILF7-uW196jb50"
+SUPABASE_TABELA = "logs"
 
 def enviar_logs_para_supabase(log):
-    url = f"{SUPABASE_URL}/rest/v1/logs"
+    url = f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABELA}"
     headers = {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",
@@ -12,20 +13,44 @@ def enviar_logs_para_supabase(log):
         "Prefer": "return=minimal"
     }
 
-    check_url = f"{SUPABASE_URL}/rest/v1/logs?select=id"
-    response = requests.get(check_url, headers=headers)
-    if response.status_code == 200:
-        registros = response.json()
-        if len(registros) >= 500:
-            delete_url = f"{SUPABASE_URL}/rest/v1/logs?select=id&order=timestamp.asc&limit=500"
-            delete_response = requests.delete(delete_url, headers=headers)
-            if delete_response.status_code == 204:
-                print("🧹 Dados antigos apagados com sucesso dos Logs no Supabase.")
-            else:
-                print(f"⚠️ Erro ao apagar dados antigos: {delete_response.text}")
+    dados_para_enviar = {
+        "timestamp": log.get("timestamp"),
+        "mensagem": log.get("mensagem"),
+        "nivel": log.get("nivel"),
+        "origem": log.get("origem"),
+        "evento_id": log.get("evento_id")
+    }
 
-    response = requests.post(url, headers=headers, json=log)
+    response = requests.post(url, headers=headers, json=dados_para_enviar)
     if response.status_code in [200, 201]:
         print("☁️ Log enviado com sucesso para Supabase!")
     else:
         print(f"⚠️ Erro ao enviar log: {response.status_code}\n{response.text}")
+
+def limpar_logs_supabase():
+    try:
+        headers = {
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "Content-Type": "application/json"
+        }
+
+        # Busca o ID do 500º log mais recente
+        url_select = f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABELA}?select=id&order=id.desc&offset=499&limit=1"
+        res = requests.get(url_select, headers=headers)
+        res.raise_for_status()
+        data = res.json()
+
+        if data:
+            limite_id = data[0]['id']
+
+            # Deleta logs com id menor que o limite
+            url_delete = f"{SUPABASE_URL}/rest/v1/{SUPABASE_TABELA}?id=lt.{limite_id}"
+            del_res = requests.delete(url_delete, headers=headers)
+            del_res.raise_for_status()
+            print("[OK] Logs antigos removidos da Supabase.")
+        else:
+            print("[OK] Menos de 500 registros na Supabase.")
+
+    except Exception as e:
+        print(f"[ERRO] Falha ao limpar logs da Supabase: {e}")

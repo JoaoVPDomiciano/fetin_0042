@@ -8,7 +8,6 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 let paginaLogs = 1;
 let paginaSpeed = 1;
 let paginaTrafego = 1;
-
 const itensPorPagina = 10;
 
 async function carregarLogs(pagina = 1) {
@@ -97,7 +96,6 @@ function atualizarTabelaSpeedtest(dados) {
     tbody.appendChild(row);
   });
 }
-
 function atualizarTabelaTrafego(dados) {
   const tbody = document.getElementById('dados-tabela-trafego');
   tbody.innerHTML = '';
@@ -107,8 +105,8 @@ function atualizarTabelaTrafego(dados) {
     row.innerHTML = `
       <td>${formatarData(dado.timestamp)}</td>
       <td>${dado.id}</td>
-      <td>${dado.porta} </td>
-      <td>${dado.tipo} </td>
+      <td>${dado.porta}</td>
+      <td>${dado.tipo}</td>
     `;
     tbody.appendChild(row);
   });
@@ -140,7 +138,6 @@ window.paginaAnteriorSpeed = () => {
     carregarSpeedtest(paginaSpeed);
   }
 };
-
 window.proximaPaginaTrafego = () => {
   paginaTrafego++;
   carregarTrafego(paginaTrafego);
@@ -157,14 +154,14 @@ window.mostrarTabela = (id) => {
   document.getElementById('speedtest').classList.remove('ativo');
   document.getElementById('trafego').classList.remove('ativo');
 
+
   if (id === 'logs') {
     carregarLogs();
   } else if (id === 'speedtest') {
     carregarSpeedtest();
   }
-    else if (id === 'trafego') {
+  else if (id === 'trafego') {
     carregarTrafego();
   }
-
   document.getElementById(id).classList.add('ativo');
 };
