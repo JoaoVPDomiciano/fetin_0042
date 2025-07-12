@@ -1,6 +1,9 @@
 import time
 import threading
 
+#SUPABASE_URL=https://epruvcgigotpcptjaqyr.supabase.co
+#SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwcnV2Y2dpZ290cGNwdGphcXlyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njk2MzcxMywiZXhwIjoyMDYyNTM5NzEzfQ.zIA2LO93He3kKRYhSv52w0GxoEFV9ILF7-uW196jb50
+
 from monitor.ST_runner import testar_conexao
 from monitor.log_collector import coletar_logs
 from monitor.traffic_classifier import classificar_trafego
