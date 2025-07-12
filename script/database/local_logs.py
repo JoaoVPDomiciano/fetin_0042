@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_PATH_LOGS = "resultados_LOG.db"  # Caminho do banco de dados local
+DB_PATH_LOGS = "resultados_LOG.db"
 
 def criar_tabela_logs():
     conn = sqlite3.connect(DB_PATH_LOGS)
@@ -21,6 +21,14 @@ def criar_tabela_logs():
 def salvar_sqlite_logs(log):
     conn = sqlite3.connect(DB_PATH_LOGS)
     cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM logs")
+    total = cursor.fetchone()[0]
+
+    if total >= 500:
+        print("♻️ Rotação de logs: apagando todos os registros antigos...")
+        cursor.execute("DELETE FROM logs")
+
     cursor.execute("""
         INSERT INTO logs (timestamp, mensagem, nivel, origem, evento_id)
         VALUES (?, ?, ?, ?, ?)

@@ -19,6 +19,14 @@ def criar_tabela_trafego():
 def salvar_sqlite_trafego(pacote):
     conn = sqlite3.connect(DB_PATH_TRAFFIC)
     cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM trafego")
+    total = cursor.fetchone()[0]
+
+    if total >= 500:
+        print("♻️ Rotação de tráfego: apagando todos os registros antigos...")
+        cursor.execute("DELETE FROM trafego")
+
     cursor.execute("""
         INSERT INTO trafego (timestamp, porta, tipo)
         VALUES (?, ?, ?)

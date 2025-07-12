@@ -2,7 +2,6 @@ import subprocess
 from datetime import datetime
 import re
 
-# Mapeamento simplificado de tipos de tráfego por porta
 PORT_MAP = {
     80: "Web (HTTP)",
     443: "Web (HTTPS)",

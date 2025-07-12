@@ -7,7 +7,8 @@ def obter_comando_ping():
     return ['ping', '-n', '4', '8.8.8.8'] if platform.system() == "Windows" else ['ping', '-c', '4', '8.8.8.8']
 
 def testar_conexao():
-    # Primeiro tenta o ping
+    st = speedtest.Speedtest()
+
     try:
         resultado_ping = subprocess.run(
             obter_comando_ping(),
@@ -19,9 +20,7 @@ def testar_conexao():
     except Exception as e:
         ping = f"Erro ao executar ping: {e}"
 
-    # Depois tenta o speedtest
     try:
-        st = speedtest.Speedtest()
         download = st.download() / 1_000_000
         upload = st.upload() / 1_000_000
     except Exception as e:
