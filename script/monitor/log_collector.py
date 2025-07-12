@@ -1,7 +1,11 @@
 import subprocess
 import platform
 import json
+import sqlite3
 from datetime import datetime
+
+from script.database.data_rotator import clean_sqlite_table, clean_supabase_table
+from script.database.local_logs import DB_PATH_LOGS
 
 PALAVRAS_CHAVE = [
     'falha', 'erro', 'fail', 'timeout', 'restart', 'dhcp',
@@ -118,3 +122,8 @@ def coletar_logs_windows(linhas=10):
     except Exception as e:
         print(f"[ERRO] Exceção ao coletar logs no Windows: {e}")
         return []
+
+local_conn = sqlite3.connect(DB_PATH_LOGS)
+#clean_sqlite_table(local_conn, "resultados_LOG")
+clean_supabase_table("logs")
+local_conn.close()

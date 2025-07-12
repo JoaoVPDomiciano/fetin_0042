@@ -13,9 +13,9 @@ from cloud.supabase_ST import enviar_para_supabase
 from cloud.supabase_logs import enviar_logs_para_supabase
 from cloud.supabase_traffic import enviar_trafego_para_supabase
 
-INTERVALO_TESTE = 300        # Segundos entre testes de velocidade
-INTERVALO_LOGS = 120         # Segundos entre capturas de logs
-INTERVALO_TRAF = 180         # Segundos entre capturas
+INTERVALO_TESTE = 1000        # Segundos entre testes de velocidade
+INTERVALO_LOGS = 1000        # Segundos entre capturas de logs
+INTERVALO_TRAF = 1000         # Segundos entre capturas
 LINHAS_LOGS = 10             # Quantidade de logs recentes a coletar por vez
 
 def rotina_speedtest():
@@ -34,7 +34,7 @@ def rotina_logs():
             enviar_logs_para_supabase(log)
         print(f"📦 {len(logs)} logs coletados e enviados.")
         time.sleep(INTERVALO_LOGS)
-
+""""
 def rotina_trafego():
     while True:
         pacotes = classificar_trafego()
@@ -43,7 +43,7 @@ def rotina_trafego():
             enviar_trafego_para_supabase(pacote)
         print(f"🌐 {len(pacotes)} pacotes classificados e enviados.")
         time.sleep(INTERVALO_TRAF)
-
+"""
 def main():
     criar_tabela_speedTest()
     criar_tabela_logs()
@@ -51,15 +51,15 @@ def main():
 
     t1 = threading.Thread(target=rotina_speedtest)
     t2 = threading.Thread(target=rotina_logs)
-    t3 = threading.Thread(target=rotina_trafego)
+    #t3 = threading.Thread(target=rotina_trafego)
 
     t1.start()
     t2.start()
-    t3.start()
+    #t3.start()
 
     t1.join()
     t2.join()
-    t3.join()
+    #t3.join()
 
 if __name__ == "__main__":
     main()
