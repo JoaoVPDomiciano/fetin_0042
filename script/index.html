@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analisador de Banda</title>
+  <link rel="stylesheet" href="estilos.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-image: url('fundo.png'); /* coloque o nome da imagem correta aqui */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #fff;
+    }
+
+    header {
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    nav button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      margin-left: 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .tabela-container {
+      margin-top: 100px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #000;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Analisador de Banda</h1>
+    <nav>
+      <button onclick="mostrarTabela('logs')">Logs</button>
+      <button onclick="mostrarTabela('speedtest')">Speedtest</button>
+      <button onclick="mostrarTabela('trafego')">Tráfego</button>
+    </nav>
+  </header>
+
+  <div id="logs" class="tabela-container">
+    <h2>Logs de Conexão</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>ID</th>
+          <th>Mensagem</th>
+          <th>Nível</th>
+          <th>Origem</th>
+          <th>Evento ID</th>
+        </tr>
+      </thead>
+      <tbody id="dados-tabela-logs"></tbody>
+    </table>
+    <div class="paginacao">
+      <button onclick="paginaAnteriorLogs()">Anterior</button>
+      <button onclick="proximaPaginaLogs()">Próxima</button>
+    </div>
+  </div>
+
+  <div id="speedtest" class="tabela-container">
+    <h2>Resultados da Conexão (Speedtest)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Ping</th>
+          <th>Download</th>
+          <th>Upload</th>
+        </tr>
+      </thead>
+      <tbody id="dados-tabela-speedtest"></tbody>
+    </table>
+    <div class="paginacao">
+      <button onclick="paginaAnteriorSpeed()">Anterior</button>
+      <button onclick="proximaPaginaSpeed()">Próxima</button>
+    </div>
+  </div>
+
+  <div id="trafego" class="tabela-container">
+    <h3>Classificação de Tráfego</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Data/Hora</th>
+          <th>Id</th>
+          <th>Porta</th>
+          <th>Tipo</th>
+        </tr>
+      </thead>
+      <tbody id="dados-tabela-trafego"></tbody>
+    </table>
+    <div class="paginacao">
+      <button onclick="paginaAnteriorTrafego()">Anterior</button>
+      <button onclick="proximaPaginaTrafego()">Próxima</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="script.js"></script>
+  <script>
+    let tabelaAtualVisivel = null;
+
+    function mostrarTabela(id) {
+      const logs = document.getElementById('logs');
+      const speedtest = document.getElementById('speedtest');
+      const trafego = document.getElementById('trafego');
+
+      if (tabelaAtualVisivel === id) {
+        document.getElementById(id).classList.remove('ativo');
+        tabelaAtualVisivel = null;
+        return;
+      }
+
+      logs.classList.remove('ativo');
+      speedtest.classList.remove('ativo');
+      trafego.classList.remove('ativo');
+
+      document.getElementById(id).classList.add('ativo');
+      tabelaAtualVisivel = id;
+
+      if (id === 'logs') {
+        carregarLogs(paginaLogs);
+      } else if (id === 'speedtest') {
+        carregarSpeedtest(paginaSpeed);
+      } else if (id === 'trafego') {
+        carregarTrafego(paginaTrafego);
+      }
+    }
+  </script>
+</body>
+</html>

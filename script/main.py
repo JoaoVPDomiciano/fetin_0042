@@ -6,7 +6,7 @@ from monitor.log_collector import coletar_logs
 from monitor.traffic_classifier import classificar_trafego
 
 from database.local_ST import criar_tabela_speedTest, salvar_sqlite_speedTest
-from database.local_logs import criar_tabela_logs, salvar_sqlite_logs
+from database.logs import criar_tabela_logs, salvar_sqlite_logs
 from database.local_traffic import criar_tabela_trafego, salvar_sqlite_trafego
 
 from cloud.supabase_ST import enviar_para_supabase
