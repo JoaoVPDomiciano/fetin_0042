@@ -1,13 +1,9 @@
-"""
-Criação e inserção no banco local.
-"""
-
 import sqlite3
 
-#Definições de .db
-DB_PATH_ST = "resultados_ST.db" #Diretorio para o .db do SpeedTest
+from data_rotator import clean_sqlite_table, clean_supabase_table
+DB_PATH_ST = "resultados_ST.db"
+TABLE_NAME = "resultados_ST"
 
-#SpeedTest
 def criar_tabela_speedTest():
     conn = sqlite3.connect(DB_PATH_ST)
     cursor = conn.cursor()
@@ -35,3 +31,6 @@ def salvar_sqlite_speedTest(dados):
 
     conn.commit()
     conn.close()
+
+    clean_sqlite_table(DB_PATH_ST, TABLE_NAME)
+    clean_supabase_table("speedtest")

@@ -40,7 +40,7 @@ def classificar_trafego(interface='eth0', duracao=10):
         return trafego
 
     except subprocess.TimeoutExpired:
-        print("[⚠️] Timeout na captura de pacotes.")
+        print("Timeout na captura de pacotes.")
         return []
     except Exception as e:
         print(f"[ERRO] Falha ao classificar tráfego: {e}")
