@@ -23,7 +23,7 @@ def rotina_speedtest():
         resultado = testar_conexao()
         salvar_sqlite_speedTest(resultado)
         enviar_para_supabase(resultado)
-        print("✅ Teste de velocidade concluído e enviado.")
+        print("Teste de velocidade concluído e enviado.")
         time.sleep(INTERVALO_TESTE)
 
 def rotina_logs():
@@ -32,9 +32,9 @@ def rotina_logs():
         for log in logs:
             salvar_sqlite_logs(log)
             enviar_logs_para_supabase(log)
-        print(f"📦 {len(logs)} logs coletados e enviados.")
+        print(f"{len(logs)} logs coletados e enviados.")
         time.sleep(INTERVALO_LOGS)
-""""
+
 def rotina_trafego():
     while True:
         pacotes = classificar_trafego()
@@ -43,7 +43,7 @@ def rotina_trafego():
             enviar_trafego_para_supabase(pacote)
         print(f"🌐 {len(pacotes)} pacotes classificados e enviados.")
         time.sleep(INTERVALO_TRAF)
-"""
+
 def main():
     criar_tabela_speedTest()
     criar_tabela_logs()
@@ -51,15 +51,15 @@ def main():
 
     t1 = threading.Thread(target=rotina_speedtest)
     t2 = threading.Thread(target=rotina_logs)
-    #t3 = threading.Thread(target=rotina_trafego)
+    t3 = threading.Thread(target=rotina_trafego)
 
     t1.start()
     t2.start()
-    #t3.start()
+    t3.start()
 
     t1.join()
     t2.join()
-    #t3.join()
+    t3.join()
 
 if __name__ == "__main__":
     main()

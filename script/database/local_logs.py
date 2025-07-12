@@ -1,6 +1,6 @@
 import sqlite3
 
-from data_rotator import clean_sqlite_table, clean_supabase_table
+from .data_rotator import clean_sqlite_table, clean_supabase_table
 DB_PATH_LOGS = "resultados_LOG.db"  # Caminho do banco de dados local
 TABLE_NAME = "resultados_LOG"
 

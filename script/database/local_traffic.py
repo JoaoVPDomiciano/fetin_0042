@@ -1,6 +1,6 @@
 import sqlite3
 
-from data_rotator import clean_sqlite_table, clean_supabase_table
+from .data_rotator import clean_sqlite_table, clean_supabase_table
 DB_PATH_TRAFFIC = "resultados_TRAFFIC.db"
 TABLE_NAME = "trafego"
 
