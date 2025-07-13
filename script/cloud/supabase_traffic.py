@@ -18,6 +18,6 @@ def enviar_trafego_para_supabase(pacotes):
 
     response = requests.post(url, headers=headers, json=pacotes)
     if response.status_code in [200, 201]:
-        print(f"Erro ao enviar tráfego: {response.status_code} - {response.text}")
+        print(f"Tráfego enviado com sucesso para Supabase")
     else:
         print(f"Falha ao enviar dados: {response.status_code}\n{response.text}")
