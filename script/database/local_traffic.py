@@ -30,4 +30,4 @@ def salvar_sqlite_trafego(pacote):
     conn.close()
 
     clean_sqlite_table(DB_PATH_TRAFFIC, TABLE_NAME)
-    clean_supabase_table("speedtest")
+    clean_supabase_table("trafego")
