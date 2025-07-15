@@ -1,0 +1,235 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-image: linear-gradient(to right, rgb(32, 94, 217), rgb(201, 4, 70));
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .box {
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    fieldset {
+      border: 2px solid dodgerblue;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    legend {
+      background-color: dodgerblue;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      color: white;
+    }
+
+    .inputBox {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .dataBox {
+      margin-bottom: 30px; /* Espaço extra após data de nascimento */
+    }
+
+    .inputUser {
+      background: none;
+      border: none;
+      border-bottom: 1px solid white;
+      outline: none;
+      color: white;
+      font-size: 15px;
+      width: 100%;
+      padding: 5px 0;
+    }
+
+    .labelInput {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      transition: 0.5s;
+    }
+
+    .inputUser:focus ~ .labelInput,
+    .inputUser:valid ~ .labelInput {
+      top: -18px;
+      font-size: 12px;
+      color: dodgerblue;
+    }
+
+    input[type="date"] {
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    #submit {
+      background-image: linear-gradient(to right, rgb(52, 58, 255), rgb(132, 192, 251));
+      border: none;
+      width: 100%;
+      padding: 15px;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    #submit:hover {
+      background-image: linear-gradient(to right, rgb(37, 42, 174), rgb(86, 129, 172));
+    }
+
+    .back-login {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .back-login a {
+      color: dodgerblue;
+      text-decoration: none;
+    }
+
+    .radio-group {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <form id="cadastro-form">
+      <fieldset>
+        <legend>Cadastro</legend>
+
+        <div class="inputBox">
+          <input type="text" name="nome" id="nome" class="inputUser" required>
+          <label for="nome" class="labelInput">Nome completo</label>
+        </div>
+
+        <div class="inputBox">
+          <input type="text" name="email" id="email" class="inputUser" required>
+          <label for="email" class="labelInput">Email</label>
+        </div>
+
+        <div class="inputBox">
+          <input type="password" name="senha" id="senha" class="inputUser" required>
+          <label for="senha" class="labelInput">Senha</label>
+        </div>
+
+        <div class="inputBox">
+          <input type="tel" name="telefone" id="telefone" class="inputUser" required>
+          <label for="telefone" class="labelInput">Telefone</label>
+        </div>
+
+        <div class="radio-group">
+          <p>Sexo:</p>
+          <input type="radio" id="feminino" name="genero" value="feminino" required>
+          <label for="feminino">Feminino</label><br>
+          <input type="radio" id="masculino" name="genero" value="masculino" required>
+          <label for="masculino">Masculino</label><br>
+          <input type="radio" id="outro" name="genero" value="outro" required>
+          <label for="outro">Outro</label>
+        </div>
+
+        <div class="inputBox dataBox">
+          <label for="data_nascimento"><b>Data de nascimento</b></label><br>
+          <input type="date" name="data_nascimento" id="data_nascimento" required>
+        </div>
+
+        <div class="inputBox">
+          <input type="text" name="cidade" id="cidade" class="inputUser" required>
+          <label for="cidade" class="labelInput">Cidade</label>
+        </div>
+
+        <div class="inputBox">
+          <input type="text" name="estado" id="estado" class="inputUser" required>
+          <label for="estado" class="labelInput">Estado</label>
+        </div>
+
+        <div class="inputBox">
+          <input type="text" name="endereco" id="endereco" class="inputUser" required>
+          <label for="endereco" class="labelInput">Endereço</label>
+        </div>
+
+        <input type="submit" value="Cadastrar" id="submit">
+
+        <div class="back-login">
+          <p>Já tem conta? <a href="LoginProjet.html">Voltar para o login</a></p>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabaseUrl = 'https://epruvcgigotpcptjaqyr.supabase.co';
+    const supabaseKey = '';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    document.getElementById('cadastro-form').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+      const nome = document.getElementById('nome').value;
+      const telefone = document.getElementById('telefone').value;
+      const sexo = document.querySelector('input[name="genero"]:checked').value;
+      const data_nascimento = document.getElementById('data_nascimento').value;
+      const cidade = document.getElementById('cidade').value;
+      const estado = document.getElementById('estado').value;
+      const endereco = document.getElementById('endereco').value;
+
+      const { data: userData, error: signUpError } = await supabase.auth.signUp({ email, password: senha });
+
+      if (signUpError) {
+        alert('Erro ao criar conta: ' + signUpError.message);
+        return;
+      }
+
+      const { error: insertError } = await supabase.from('cadastro').insert([{
+        email,
+        nome,
+        telefone,
+        sexo,
+        data_de_nascimento: data_nascimento,
+        cidade,
+        estado,
+        endereco
+      }]);
+
+      if (insertError) {
+        alert('Erro ao salvar dados: ' + insertError.message);
+      } else {
+        alert('Cadastro realizado com sucesso!');
+        window.location.href = 'loginProjet.html';
+      }
+    });
+  </script>
+</body>
+</html>
