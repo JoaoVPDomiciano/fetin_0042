@@ -1,8 +1,6 @@
 import sqlite3
 
-from .data_rotator import clean_sqlite_table, clean_supabase_table
 DB_PATH_ST = "resultados_ST.db"
-TABLE_NAME = "resultados_ST"
 
 def criar_tabela_speedTest():
     conn = sqlite3.connect(DB_PATH_ST)
@@ -31,6 +29,3 @@ def salvar_sqlite_speedTest(dados):
 
     conn.commit()
     conn.close()
-
-    clean_sqlite_table(DB_PATH_ST, TABLE_NAME)
-    clean_supabase_table("speedtest")

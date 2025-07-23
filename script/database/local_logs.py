@@ -1,8 +1,6 @@
 import sqlite3
 
-from .data_rotator import clean_sqlite_table, clean_supabase_table
-DB_PATH_LOGS = "resultados_LOG.db"  # Caminho do banco de dados local
-TABLE_NAME = "resultados_LOG"
+DB_PATH_LOGS = "resultados_LOG.db"
 
 def criar_tabela_logs():
     conn = sqlite3.connect(DB_PATH_LOGS)
@@ -35,6 +33,3 @@ def salvar_sqlite_logs(log):
     ))
     conn.commit()
     conn.close()
-
-    clean_sqlite_table(DB_PATH_LOGS, TABLE_NAME)
-    clean_supabase_table("logs")

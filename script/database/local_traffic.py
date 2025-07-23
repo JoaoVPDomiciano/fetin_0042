@@ -1,9 +1,6 @@
 import sqlite3
 
-from .data_rotator import clean_sqlite_table, clean_supabase_table
 DB_PATH_TRAFFIC = "resultados_TRAFFIC.db"
-TABLE_NAME = "trafego"
-
 
 def criar_tabela_trafego():
     conn = sqlite3.connect(DB_PATH_TRAFFIC)
@@ -28,6 +25,3 @@ def salvar_sqlite_trafego(pacote):
     """, (pacote["timestamp"], pacote["porta"], pacote["tipo"]))
     conn.commit()
     conn.close()
-
-    clean_sqlite_table(DB_PATH_TRAFFIC, TABLE_NAME)
-    clean_supabase_table("trafego")
