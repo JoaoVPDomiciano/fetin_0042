@@ -42,7 +42,6 @@ def rotina_logs():
         print(f"{len(logs)} logs coletados e enviados.")
 
         clean_logs_data()
-
         time.sleep(INTERVALO_LOGS)
 
 def rotina_trafego():
@@ -54,7 +53,6 @@ def rotina_trafego():
         print(f" {len(pacotes)} pacotes classificados e enviados.")
 
         clean_trafego_data()
-
         time.sleep(INTERVALO_TRAF)
 
 def main():

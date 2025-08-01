@@ -6,7 +6,7 @@ def criar_tabela_trafego():
     conn = sqlite3.connect(DB_PATH_TRAFFIC)
     cursor = conn.cursor()
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS trafego (
+        CREATE TABLE IF NOT EXISTS resultados_TRAFFIC (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp TEXT,
             porta INTEGER,
@@ -20,7 +20,7 @@ def salvar_sqlite_trafego(pacote):
     conn = sqlite3.connect(DB_PATH_TRAFFIC)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO trafego (timestamp, porta, tipo)
+        INSERT INTO resultados_TRAFFIC (timestamp, porta, tipo)
         VALUES (?, ?, ?)
     """, (pacote["timestamp"], pacote["porta"], pacote["tipo"]))
     conn.commit()
