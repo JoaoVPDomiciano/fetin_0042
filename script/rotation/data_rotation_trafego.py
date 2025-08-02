@@ -27,7 +27,7 @@ def clean_supabase_table(table):
         return
 
     data = response.json()
-    if len(data) <= 100:
+    if len(data) <= 10000:
         return  # Nada a limpar
 
     ids_a_excluir = [str(row["id"]) for row in data[100:]]

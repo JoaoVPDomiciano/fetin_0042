@@ -17,10 +17,10 @@ from rotation.data_rotation_logs import clean_logs_data
 from rotation.data_rotation_speedtest import clean_speedtest_data
 from rotation.data_rotation_trafego import clean_trafego_data
 
-INTERVALO_TESTE = 60        # Segundos entre testes de velocidade
-INTERVALO_LOGS = 30        # Segundos entre capturas de logs
-INTERVALO_TRAF = 15         # Segundos entre capturas
-LINHAS_LOGS = 10             # Quantidade de logs recentes a coletar por vez
+INTERVALO_TESTE = 120        # Segundos entre testes de velocidade
+INTERVALO_LOGS = 3000        # Intervalo de 5min para o log
+INTERVALO_TRAF =  6000       # Intervalo de 10min para o trafego
+LINHAS_LOGS = 100             # Quantidade de logs recentes a coletar por vez
 
 def rotina_speedtest():
     while True:
