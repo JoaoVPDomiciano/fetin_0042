@@ -1,12 +1,12 @@
 import sqlite3
 
-DB_PATH_LOGS = "resultados_LOG.db"
+DB_PATH_LOGS = "../resultados_LOG.db"
 
 def criar_tabela_logs():
     conn = sqlite3.connect(DB_PATH_LOGS)
     cursor = conn.cursor()
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS logs (
+        CREATE TABLE IF NOT EXISTS resultados_LOG (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp TEXT,
             mensagem TEXT,
@@ -22,7 +22,7 @@ def salvar_sqlite_logs(log):
     conn = sqlite3.connect(DB_PATH_LOGS)
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO logs (timestamp, mensagem, nivel, origem, evento_id)
+        INSERT INTO resultados_LOG (timestamp, mensagem, nivel, origem, evento_id)
         VALUES (?, ?, ?, ?, ?)
     """, (
         log.get("timestamp"),

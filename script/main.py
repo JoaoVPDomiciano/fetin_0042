@@ -29,7 +29,7 @@ def rotina_speedtest():
         enviar_para_supabase(resultado)
         print("Teste de velocidade concluído e enviado.")
 
-        #clean_speedtest_data()
+        clean_speedtest_data()
         time.sleep(INTERVALO_TESTE)
 
 def rotina_logs():
@@ -40,7 +40,7 @@ def rotina_logs():
             enviar_logs_para_supabase(log)
         print(f"{len(logs)} logs coletados e enviados.")
 
-        #clean_logs_data()
+        clean_logs_data()
         time.sleep(INTERVALO_LOGS)
 
 def rotina_trafego():
@@ -51,7 +51,7 @@ def rotina_trafego():
             enviar_trafego_para_supabase(pacote)
         print(f" {len(pacotes)} pacotes classificados e enviados.")
 
-        #clean_trafego_data()
+        clean_trafego_data()
         time.sleep(INTERVALO_TRAF)
 
 def main():

@@ -9,7 +9,7 @@ load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-DB_PATH = "resultados_LOG.db"
+DB_PATH = "../resultados_LOG.db"
 TABLE_NAME = "resultados_LOG"
 
 RETENTION_POLICY = {

@@ -8,7 +8,7 @@ load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-DB_PATH = "resultados_ST.db"
+DB_PATH = "../resultados_ST.db"
 TABLE_NAME = "resultados_ST"
 
 def clean_supabase_table(table):

@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_PATH_TRAFFIC = "resultados_TRAFFIC.db"
+DB_PATH_TRAFFIC = "../resultados_TRAFFIC.db"
 
 def criar_tabela_trafego():
     conn = sqlite3.connect(DB_PATH_TRAFFIC)

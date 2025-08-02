@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_PATH_ST = "resultados_ST.db"
+DB_PATH_ST = "../resultados_ST.db"
 
 def criar_tabela_speedTest():
     conn = sqlite3.connect(DB_PATH_ST)
