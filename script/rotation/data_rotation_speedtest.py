@@ -8,36 +8,75 @@ load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise EnvironmentError("SUPABASE_URL ou SUPABASE_KEY não estão definidos no .env!")
+
 DB_PATH = "../resultados_ST.db"
 TABLE_NAME = "resultados_ST"
 
 def clean_supabase_table(table):
-    url = f"{SUPABASE_URL}/rest/v1/{table}?id=lt.0"
+    url = f"{SUPABASE_URL}/rest/v1/{table}?id=gt.0"  # Corrigido para apagar registros com id > 0
     headers = {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
     }
     response = requests.delete(url, headers=headers)
     if response.status_code not in [200, 204]:
         print(f"[ERRO] ao limpar Supabase: {response.status_code} - {response.text}")
+    else:
+        print(f"[OK] Supabase '{table}' limpa com sucesso.")
 
 def clean_speedtest_data():
+    if not os.path.exists(DB_PATH):
+        print(f"[ERRO] Banco de dados não encontrado: {DB_PATH}")
+        return
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+
+    # Verifica se a tabela existe
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (TABLE_NAME,))
+    if not cursor.fetchone():
+        print(f"[ERRO] Tabela '{TABLE_NAME}' não existe.")
+        conn.close()
+        return
 
     cursor.execute(f"SELECT COUNT(*) FROM {TABLE_NAME}")
     total = cursor.fetchone()[0]
 
     if total > 100:
         excess = total - 100
-        cursor.execute(f"DELETE FROM {TABLE_NAME} WHERE id IN (SELECT id FROM {TABLE_NAME} ORDER BY timestamp ASC LIMIT ?)", (excess,))
+        print(f"[INFO] Removendo {excess} registros mais antigos de '{TABLE_NAME}'...")
+
+        cursor.execute(f"""
+            DELETE FROM {TABLE_NAME}
+            WHERE id IN (
+                SELECT id FROM {TABLE_NAME}
+                ORDER BY timestamp ASC
+                LIMIT ?
+            )
+        """, (excess,))
         conn.commit()
 
-        cursor.execute(f"CREATE TABLE IF NOT EXISTS temp AS SELECT * FROM {TABLE_NAME} ORDER BY timestamp ASC")
-        cursor.execute(f"DROP TABLE {TABLE_NAME}")
-        cursor.execute(f"ALTER TABLE temp RENAME TO {TABLE_NAME}")
+        # Reorganiza os dados restantes por timestamp
+        cursor.execute(f"""
+            CREATE TEMP TABLE temp_ordered AS
+            SELECT * FROM {TABLE_NAME} ORDER BY timestamp ASC
+        """)
+        cursor.execute(f"DELETE FROM {TABLE_NAME}")
+        cursor.execute(f"""
+            INSERT INTO {TABLE_NAME} (
+                id, timestamp, download, upload, ping, servidor, localidade
+            )
+            SELECT id, timestamp, download, upload, ping, servidor, localidade FROM temp_ordered
+        """)
         conn.commit()
+        print(f"[OK] Tabela '{TABLE_NAME}' reorganizada com sucesso.")
+
+    else:
+        print(f"[INFO] Nenhuma limpeza necessária. Total de registros: {total}")
 
     conn.close()
     clean_supabase_table("speedtest")
