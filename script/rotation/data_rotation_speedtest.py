@@ -15,18 +15,33 @@ DB_PATH = "../resultados_ST.db"
 TABLE_NAME = "resultados_ST"
 
 def clean_supabase_table(table):
-    url = f"{SUPABASE_URL}/rest/v1/{table}?id=gt.0"  # Corrigido para apagar registros com id > 0
+    url = f"{SUPABASE_URL}/rest/v1/{table}?select=id&order=timestamp.desc"
     headers = {
         "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
-        "Content-Type": "application/json",
-        "Prefer": "return=minimal"
+        "Authorization": f"Bearer {SUPABASE_KEY}"
     }
-    response = requests.delete(url, headers=headers)
-    if response.status_code not in [200, 204]:
-        print(f"[ERRO] ao limpar Supabase: {response.status_code} - {response.text}")
-    else:
-        print(f"[OK] Supabase '{table}' limpa com sucesso.")
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f"[ERRO] ao buscar registros: {response.status_code} - {response.text}")
+        return
+
+    data = response.json()
+    if len(data) <= 100:
+        return  # Nada a limpar
+
+    ids_a_excluir = [str(row["id"]) for row in data[100:]]
+
+    delete_url = f"{SUPABASE_URL}/rest/v1/{table}?id=in.({','.join(ids_a_excluir)})"
+    delete_headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    del_response = requests.delete(delete_url, headers=delete_headers)
+    if del_response.status_code not in [200, 204]:
+        print(f"[ERRO] ao deletar registros antigos: {del_response.status_code} - {del_response.text}")
 
 def clean_speedtest_data():
     if not os.path.exists(DB_PATH):
