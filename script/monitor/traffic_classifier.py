@@ -2,7 +2,7 @@ import subprocess
 from datetime import datetime
 import re
 
-PORT_MAP_EXTENSO = {
+PORT_MAP = {
     # 🌐 Web
     80: "HTTP - Navegação web padrão (insegura)",
     443: "HTTPS - Navegação segura (SSL/TLS)",
