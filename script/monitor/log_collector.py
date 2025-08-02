@@ -26,19 +26,20 @@ def coletar_logs(linhas=10):
         for linha in resultado.stdout.strip().split("\n"):
             try:
                 log = json.loads(linha)
-                mensagem_original = log.get("MESSAGE", "").lower()
+                mensagem_bruta = log.get("MESSAGE", "").strip()
 
-                if any(palavra in mensagem_original for palavra in PALAVRAS_CHAVE):
+                if not mensagem_bruta:
+                    continue
+
+                if any(palavra in mensagem_bruta.lower() for palavra in PALAVRAS_CHAVE):
                     log_entry = {
                         "timestamp": converter_timestamp(log.get("__REALTIME_TIMESTAMP")),
-                        "mensagem_original": log.get("MESSAGE", "Sem detalhes disponíveis."),
-                        "explicacao": humanizar_mensagem(mensagem_original),
-                        "nivel": mapear_nivel(log.get("PRIORITY")),
-                        "origem": log.get("SYSLOG_IDENTIFIER", "Desconhecida"),
-                        "evento_id": log.get("MESSAGE_ID", "Sem ID"),
-                        "pid": log.get("_PID", "Desconhecido")
+                        "mensagem": humanizar_mensagem(mensagem_bruta),
+                        "mensagem_original": mensagem_bruta,
+                        "nivel": log.get("PRIORITY"),
+                        "origem": log.get("SYSLOG_IDENTIFIER"),
+                        "evento_id": log.get("MESSAGE_ID") or log.get("_PID")
                     }
-
                     logs_filtrados.append(log_entry)
 
             except json.JSONDecodeError:
@@ -51,30 +52,32 @@ def coletar_logs(linhas=10):
         return []
 
 def humanizar_mensagem(mensagem):
-    if "dns" in mensagem:
-        return "Não foi possível resolver o endereço de um site. Isso pode indicar problemas com os servidores DNS."
-    elif "timeout" in mensagem:
-        return "A operação demorou demais para responder. Pode estar relacionada à lentidão da internet ou falha do serviço."
-    elif "fail" in mensagem or "falha" in mensagem:
-        return "Uma falha ocorreu no sistema ou serviço. Isso pode prejudicar a funcionalidade esperada."
-    elif "erro" in mensagem:
-        return "Um erro foi registrado no sistema. Verifique se algum componente está com problemas."
-    elif "restart" in mensagem:
-        return "Um serviço foi reiniciado automaticamente. Isso pode ser uma tentativa de recuperação após falha."
-    elif "dhcp" in mensagem:
-        return "O sistema tentou obter um IP automaticamente via DHCP."
-    elif "ip" in mensagem:
-        return "Mudança ou falha relacionada ao endereço IP."
-    elif "driver" in mensagem:
-        return "Ocorreu uma falha ou alteração com um driver. Isso pode afetar periféricos ou hardware."
-    elif "desconectado" in mensagem:
-        return "Houve uma desconexão de rede ou dispositivo."
-    elif "conexão" in mensagem:
-        return "Foi detectado um evento de conexão ou tentativa de conexão."
-    elif "conectado" in mensagem:
-        return "O sistema estabeleceu uma conexão com sucesso."
+    mensagem_lower = mensagem.lower()
+
+    if "dns" in mensagem_lower:
+        return "Problema ao resolver o endereço DNS. Pode indicar instabilidade na rede."
+    elif "timeout" in mensagem_lower:
+        return "Tempo limite excedido para uma operação de rede ou sistema."
+    elif "fail" in mensagem_lower or "falha" in mensagem_lower:
+        return "Falha detectada no sistema ou em um serviço."
+    elif "erro" in mensagem_lower:
+        return "Erro detectado em algum componente do sistema."
+    elif "restart" in mensagem_lower:
+        return "Reinício automático de um componente detectado."
+    elif "dhcp" in mensagem_lower:
+        return "Solicitação de IP via DHCP em andamento ou com erro."
+    elif "ip" in mensagem_lower:
+        return "Endereço IP alterado ou problema ao configurar IP."
+    elif "driver" in mensagem_lower:
+        return "Possível falha de driver. Verifique os dispositivos conectados."
+    elif "desconectado" in mensagem_lower:
+        return "Perda de conexão com a rede ou hardware."
+    elif "conexão" in mensagem_lower:
+        return "Alteração ou falha na conexão identificada."
+    elif "conectado" in mensagem_lower:
+        return "Sistema conectado com sucesso a um recurso."
     else:
-        return "Evento do sistema registrado. Verifique os detalhes técnicos para mais informações."
+        return "Evento registrado no sistema. Sem categoria definida."
 
 def converter_timestamp(timestamp_str):
     try:
@@ -83,16 +86,3 @@ def converter_timestamp(timestamp_str):
         return datetime.utcfromtimestamp(segundos).isoformat() + 'Z'
     except (ValueError, TypeError):
         return datetime.utcnow().isoformat() + 'Z'
-
-def mapear_nivel(prioridade):
-    mapa = {
-        "0": "Emergência",
-        "1": "Alerta",
-        "2": "Crítico",
-        "3": "Erro",
-        "4": "Aviso",
-        "5": "Notificação",
-        "6": "Informação",
-        "7": "Depuração"
-    }
-    return mapa.get(str(prioridade), "Desconhecido")
