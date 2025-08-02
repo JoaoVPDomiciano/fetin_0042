@@ -2,112 +2,136 @@ import subprocess
 from datetime import datetime
 import re
 
-PORT_MAP = {
-    # 🌐 Web / Navegação
-    80: "Web - HTTP (Navegação não segura)",
-    443: "Web - HTTPS (Navegação segura)",
-    8080: "Web - Proxy HTTP",
-    8443: "Web - HTTPS alternativo",
+PORT_MAP_EXTENSO = {
+    # 🌐 Web
+    80: "HTTP - Navegação web padrão (insegura)",
+    443: "HTTPS - Navegação segura (SSL/TLS)",
+    8080: "HTTP alternativo / Proxy",
+    8443: "HTTPS alternativo",
+    8880: "HTTP proxy alternativo (Cloudflare, cPanel)",
 
     # 📧 E-mail
-    25: "SMTP - Envio de E-mails",
-    110: "POP3 - Recebimento de E-mails (inseguro)",
-    143: "IMAP - Acesso remoto a e-mails (inseguro)",
-    465: "SMTPS - SMTP Seguro (legacy)",
-    587: "SMTP - Envio autenticado (moderno)",
-    993: "IMAPS - IMAP Seguro",
-    995: "POP3S - POP3 Seguro",
+    25: "SMTP - Envio de e-mails (inseguro)",
+    110: "POP3 - Recebimento de e-mails (inseguro)",
+    143: "IMAP - Acesso a e-mails (inseguro)",
+    465: "SMTPS - SMTP seguro (SSL)",
+    587: "SMTP autenticado (STARTTLS)",
+    993: "IMAPS - IMAP seguro",
+    995: "POP3S - POP3 seguro",
 
-    # 📁 Transferência de Arquivos
+    # 📁 Transferência de arquivos
     20: "FTP - Dados",
     21: "FTP - Controle",
-    22: "SSH / SFTP - Acesso remoto e transferência segura",
-    69: "TFTP - Trivial FTP (usado em dispositivos embarcados)",
-    989: "FTPS - FTP sobre TLS (dados)",
-    990: "FTPS - FTP sobre TLS (controle)",
+    22: "SSH/SFTP - Acesso remoto seguro",
+    989: "FTPS - Dados seguros",
+    990: "FTPS - Controle seguro",
+    69: "TFTP - Trivial File Transfer Protocol",
 
     # 🔒 Acesso remoto / Administração
-    23: "Telnet - Acesso remoto não criptografado",
-    3389: "RDP - Área de Trabalho Remota (Windows)",
-
-    # 🕑 Tempo / Sincronização
-    123: "NTP - Protocolo de Tempo de Rede",
-
-    # 🎥 Streaming / Mídia
-    554: "RTSP - Protocolo de Streaming",
-    1755: "MMS - Microsoft Media Services",
-    1935: "RTMP - Streaming Flash",
-    7070: "RealAudio Streaming",
-    8000: "SHOUTcast/Icecast - Rádio/Streaming",
-    8554: "RTSP Alternativo",
+    23: "Telnet - Acesso remoto não seguro",
+    3389: "RDP - Área de trabalho remota",
+    2222: "SSH alternativo (frequente em embedded)",
+    5800: "VNC via HTTP",
+    5900: "VNC - Controle remoto de desktop",
 
     # 📡 DNS
     53: "DNS - Resolução de nomes",
     853: "DNS-over-TLS",
+    5353: "mDNS - Multicast DNS",
+    5355: "LLMNR - Link-Local Multicast Name Resolution",
+
+    # 🕑 Tempo
+    123: "NTP - Protocolo de sincronização de tempo",
 
     # 🛡️ VPNs
-    1194: "OpenVPN",
-    500: "IPSec (ISAKMP)",
+    500: "IPSec - ISAKMP",
     1701: "L2TP",
-    4500: "IPSec NAT-T",
     1723: "PPTP",
-    51820: "WireGuard",
+    4500: "IPSec NAT-T",
+    1194: "OpenVPN (UDP)",
+    51820: "WireGuard VPN",
+    443: "VPNs stealth via TLS (OpenVPN, etc.)",
 
-    # 🗂️ Compartilhamento e serviços Microsoft
-    135: "DCE/RPC - MS Serviços Remotos",
-    137: "NetBIOS - Nome",
-    138: "NetBIOS - Datagramas",
-    139: "NetBIOS - Sessões",
-    445: "SMB - Compartilhamento de Arquivos (Windows)",
-
-    # 🧠 Banco de Dados
+    # 🧠 Banco de dados
     1433: "SQL Server",
-    1521: "Oracle DB",
     3306: "MySQL/MariaDB",
     5432: "PostgreSQL",
+    1521: "Oracle DB",
     27017: "MongoDB",
     6379: "Redis",
-    50000: "DB2 (IBM)",
+    9042: "Cassandra",
+    50000: "IBM DB2",
 
-    # ☁️ Serviços em Nuvem / Backend
-    2375: "Docker (API não segura)",
-    2376: "Docker (API segura)",
+    # ☁️ Serviços em nuvem
+    2375: "Docker - API não segura",
+    2376: "Docker - API segura",
     6443: "Kubernetes API",
-    4505: "SaltStack Publisher",
-    4506: "SaltStack Worker",
+    10250: "Kubelet API",
+    8500: "Consul - Service discovery",
+    8200: "Vault - Gerenciamento de segredos",
+    5050: "Mesos Master",
+    9090: "Prometheus",
+    9093: "Alertmanager",
+    3000: "Grafana",
+    5601: "Kibana",
 
-    # 🧠 IoT / Mensageria
-    1883: "MQTT - Mensageria IoT",
-    8883: "MQTTS - MQTT Seguro",
-    5683: "CoAP - Protocolo IoT leve",
-    4840: "OPC UA - Automação industrial",
+    # 🧠 IoT / Automação
+    1883: "MQTT - Protocolo de mensagens para IoT",
+    8883: "MQTT seguro (TLS)",
+    5683: "CoAP - IoT leve",
+    4840: "OPC UA - Indústria/automação",
+    49152: "UPnP - Plug and play (IoT, câmeras)",
+    9999: "TP-Link Smart Devices",
 
-    # 💬 Mensageiros e Apps
-    5222: "XMPP/Jabber - Chat",
+    # 💬 Mensagens / VoIP
+    5060: "SIP - Início de chamadas VoIP (UDP)",
+    5061: "SIP seguro (TLS)",
+    3478: "STUN/TURN - WebRTC / Zoom / Meet",
+    19302: "STUN - Google",
+    5222: "XMPP - Chat / Mensagens",
     5228: "Google Play Services",
-    3478: "STUN - WebRTC / Chamadas (Zoom, Meet)",
-    19302: "Google WebRTC (STUN)",
+    1863: "MSN Messenger (legacy)",
 
-    # 🕹️ Jogos e plataformas
+    # 🎮 Jogos online
     25565: "Minecraft",
-    27015: "Steam (Valve)",
+    27015: "Steam - Jogos Valve",
     5000: "League of Legends (PBE)",
     3074: "Xbox Live / Call of Duty",
-    6112: "Blizzard (Diablo, WoW)",
-    27960: "Quake/Enemy Territory",
+    6112: "Blizzard - Diablo, WoW",
+    28960: "Call of Duty: Modern Warfare",
+    27960: "Quake / Enemy Territory",
+    3659: "EA Games (FIFA, BF)",
+    5005: "Rocket League",
 
-    # 🎛️ Outros / Diversos
-    8081: "Painel Web Alternativo",
-    9000: "SonarQube / Desenvolvimento",
-    9090: "Prometheus / Monitoramento",
-    1812: "RADIUS - Autenticação",
+    # 🖥️ Serviços Windows / MS
+    135: "DCE/RPC - Serviços MS",
+    137: "NetBIOS - Nome",
+    138: "NetBIOS - Datagramas",
+    139: "NetBIOS - Sessão",
+    445: "SMB - Compartilhamento de arquivos",
+
+    # 📈 Monitoramento
     161: "SNMP - Monitoramento de rede",
-    514: "Syslog - Log de Sistema",
+    162: "SNMP Trap",
+    514: "Syslog",
+    2003: "Graphite - Métricas",
+    8125: "StatsD",
+    8126: "DogStatsD",
+    19999: "Netdata",
+
+    # 🎛️ Outros serviços
+    3000: "Painel Web (Node.js / Grafana)",
+    8081: "Web Interface Alternativa",
+    9000: "SonarQube / Dev",
+    10000: "Webmin - Administração web",
+    20000: "Usermin - Painel de usuário",
+    12345: "NetBus - Backdoor (legacy)",
+    31337: "Elite - Histórico de backdoors",
+    6667: "IRC - Internet Relay Chat",
 
     # 🚫 Desconhecida
-    0: "Porta inválida ou não identificada"
+    0: "Porta inválida ou desconhecida"
 }
-
 
 def classificar_trafego(interface='eth0', duracao=10):
     try:
