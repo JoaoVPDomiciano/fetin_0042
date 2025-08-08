@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-image: linear-gradient(to right, rgb(32, 94, 217), rgb(201, 4, 70));
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 40px;
+      border-radius: 15px;
+      color: white;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-container h1 {
+      margin-bottom: 25px;
+    }
+
+    .inputBox {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    input[type="text"] {
+      padding: 15px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      width: 100%;
+      border-radius: 8px;
+      background: none;
+      color: white;
+      border-bottom: 1px solid white;
+      font-family: monospace; /* Mantém largura constante */
+      min-height: 48px;        /* Garante altura consistente */
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: -10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .options label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .options a {
+      color: dodgerblue;
+      text-decoration: none;
+    }
+
+    .options a:hover {
+      text-decoration: underline;
+    }
+
+    button {
+      background-image: linear-gradient(to right, rgb(52, 58, 255), rgb(132, 192, 251));
+      border: none;
+      padding: 15px;
+      width: 100%;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-image: linear-gradient(to right, rgb(37, 42, 174), rgb(86, 129, 172));
+    }
+
+    .register-link {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .register-link a {
+      color: dodgerblue;
+      text-decoration: none;
+    }
+
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Login</h1>
+
+    <div class="inputBox">
+      <input type="email" placeholder="Email" id="login-email" required>
+    </div>
+
+    <div class="inputBox">
+      <input type="password" placeholder="Senha" id="login-senha" required>
+    </div>
+
+    <div class="options">
+      <label for="toggleSenha">
+        <input type="checkbox" id="toggleSenha"> Mostrar senha
+      </label>
+      <a href="Recuperaçãodesenha.html">Esqueceu a senha?</a>
+    </div>
+
+    <button id="login-btn">Entrar</button>
+
+    <div class="register-link">
+      <p>Não tem conta? <a href="Cadastramento.html">Cadastre-se</a></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabaseUrl = 'https://epruvcgigotpcptjaqyr.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwcnV2Y2dpZ290cGNwdGphcXlyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njk2MzcxMywiZXhwIjoyMDYyNTM5NzEzfQ.zIA2LO93He3kKRYhSv52w0GxoEFV9ILF7-uW196jb50';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const email = document.getElementById('login-email').value;
+      const senha = document.getElementById('login-senha').value;
+
+      if (!email || !senha) {
+        alert('Preencha todos os campos!');
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: senha
+      });
+
+      if (error) {
+        alert('Erro ao fazer login: ' + error.message);
+        return;
+      }
+
+      alert('Login realizado com sucesso!');
+      window.location.href = 'base.html';
+    });
+
+    // Mostrar ou esconder senha
+    document.getElementById('toggleSenha').addEventListener('change', function () {
+      const senhaInput = document.getElementById('login-senha');
+      senhaInput.type = this.checked ? 'text' : 'password';
+    });
+  </script>
+</body>
+</html>

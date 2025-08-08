@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recuperar Senha</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-image: linear-gradient(to right, rgb(32, 94, 217), rgb(201, 4, 70));
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .recovery-container {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 40px;
+      border-radius: 15px;
+      color: white;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .recovery-container h1 {
+      margin-bottom: 25px;
+    }
+
+    .inputBox {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    input[type="email"] {
+      padding: 15px;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      width: 100%;
+      border-radius: 8px;
+      background: none;
+      color: white;
+      border-bottom: 1px solid white;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    button {
+      background-image: linear-gradient(to right, rgb(52, 58, 255), rgb(132, 192, 251));
+      border: none;
+      padding: 15px;
+      width: 100%;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-image: linear-gradient(to right, rgb(37, 42, 174), rgb(86, 129, 172));
+    }
+
+    .back-link {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .back-link a {
+      color: dodgerblue;
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="recovery-container">
+    <h1>Recuperar Senha</h1>
+
+    <div class="inputBox">
+      <input type="email" id="recovery-email" placeholder="Digite seu email" required />
+    </div>
+
+    <button id="send-recovery">Enviar link de redefinição</button>
+
+    <div class="back-link">
+      <p><a href="LoginProjet.html">Voltar para o login</a></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabaseUrl = 'https://epruvcgigotpcptjaqyr.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwcnV2Y2dpZ290cGNwdGphcXlyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0Njk2MzcxMywiZXhwIjoyMDYyNTM5NzEzfQ.zIA2LO93He3kKRYhSv52w0GxoEFV9ILF7-uW196jb50';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    document.getElementById('send-recovery').addEventListener('click', async () => {
+      const email = document.getElementById('recovery-email').value;
+
+      if (!email) {
+        alert('Digite o email para recuperação.');
+        return;
+      }
+
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'https://seu-dominio.com/nova-senha.html' // Troque pelo endereço da página onde o usuário criará a nova senha
+      });
+
+      if (error) {
+        alert('Erro ao enviar link de redefinição: ' + error.message);
+        return;
+      }
+
+      alert('Link de redefinição enviado para seu email.');
+    });
+  </script>
+</body>
+</html>
