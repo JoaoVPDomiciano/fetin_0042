@@ -129,6 +129,50 @@ PORT_MAP = {
     31337: "Elite - Histórico de backdoors",
     6667: "IRC - Internet Relay Chat",
 
+
+    # Update
+    1: "TCMUX – TCP Port Service Multiplexer",
+    5: "RJE – Remote Job Entry",
+    7: "ECHO – Teste de conectividade (echo)",
+    9: "DISCARD – Descartar pacotes (teste)",
+    11: "SYSTAT – Usuários ativos no sistema",
+    13: "DAYTIME – Data e hora do servidor",
+    17: "QOTD – Quote of the Day (citação de teste)",
+    18: "MSP – Message Send Protocol",
+    19: "CHARGEN – Gerador de caracteres (teste/diagnóstico)",
+    37: "TIME – Hora legível por máquina (sincronização)",
+    43: "WHOIS – Consulta de registros de domínio",
+    49: "TACACS – Autenticação remota (Legacy)",
+    67: "DHCP BOOTP Server – DHCP servidor",
+    68: "DHCP BOOTP Client – DHCP cliente",
+    70: "GOPHER – Protocolo Gopher (antigo)",
+    79: "FINGER – Informação de usuários",
+    88: "KERBEROS – Autenticação de rede Kerberos v5",
+    101: "HOSTNAME – Resolução de nome de host (legacy)",
+    102: "ISO-TSAP – ISO Transport Service Access Point",
+    105: "CSO – Serviço de diretório (legacy)",
+    107: "RTELNET – Telnet remoto alternativo",
+    109: "POP2 – Post Office Protocol v2 (legacy)",
+    110: "POP3 – Recebimento de e-mails POP3",
+    111: "SUNRPC – Portmapper / RPC remoto",
+    113: "IDENT – Identificação de usuário (auth)",
+    115: "SFTP – Secure File Transfer Protocol (legacy)",
+    117: "UUCP-PATH – UUCP path service",
+    119: "NNTP – Usenet News Transfer Protocol",
+    135: "DCE/RPC – Microsoft endpoint mapper",
+    137: "NETBIOS-NS – NetBIOS Name Service",
+    138: "NETBIOS-DGM – Datagram Service",
+    139: "NETBIOS-SSN – Session Service (SMB)",
+    179: "BGP – Protocolo de Gateway Fronteiriço",
+    194: "IRC – Internet Relay Chat",
+    389: "LDAP – Lightweight Directory Access Protocol",
+    427: "SVRLOC – Server Location Protocol",
+    546: "DHCPv6 Client",
+    547: "DHCPv6 Server",
+    563: "NNTPS – NNTP over SSL",
+    636: "LDAPS – LDAP Secure (SSL/TLS)",
+    1900: "UPnP (SSDP) – Descoberta de dispositivos na rede (UDP)",
+    
     # 🚫 Desconhecida
     0: "Porta inválida ou desconhecida"
 }
@@ -161,3 +205,4 @@ def classificar_trafego(interface='eth0', duracao=10):
     except Exception as e:
         print(f"[ERRO] Falha ao classificar tráfego: {e}")
         return []
+
