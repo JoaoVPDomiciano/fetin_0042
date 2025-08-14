@@ -1,5 +1,12 @@
 import time
 import threading
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 from monitor.ST_runner import testar_conexao
 from monitor.log_collector import coletar_logs
@@ -17,12 +24,33 @@ from rotation.data_rotation_logs import clean_logs_data
 from rotation.data_rotation_speedtest import clean_speedtest_data
 from rotation.data_rotation_trafego import clean_trafego_data
 
-INTERVALO_TESTE = 120        # Segundos entre testes de velocidade
-INTERVALO_LOGS = 3000        # Intervalo de 5min para o log
-INTERVALO_TRAF =  6000       # Intervalo de 10min para o trafego
-LINHAS_LOGS = 100             # Quantidade de logs recentes a coletar por vez
+INTERVALO_TESTE = 120
+INTERVALO_LOGS = 3000
+INTERVALO_TRAF = 6000
+LINHAS_LOGS = 100
 
-def rotina_speedtest():
+def verificar_usuario(email, senha):
+    url = f"{SUPABASE_URL}/rest/v1/usuarios?email=eq.{email}&senha=eq.{senha}"
+    headers = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        usuarios = response.json()
+        if usuarios:
+            horarios = usuarios[0]["horario1"], usuarios[0]["horario2"], usuarios[0]["horario3"]
+            return True, horarios
+        else:
+            return False, None
+    else:
+        print(f"Erro ao buscar usuário: {response.status_code}")
+        return False, None
+
+def rotina_speedtest(horarios):
     while True:
         resultado = testar_conexao()
         salvar_sqlite_speedTest(resultado)
@@ -30,20 +58,20 @@ def rotina_speedtest():
         print("Teste de velocidade concluído e enviado.")
 
         clean_speedtest_data()
-        time.sleep(INTERVALO_TESTE)
+        time.sleep(120)
 
-def rotina_logs():
+def rotina_logs(horarios):
     while True:
-        logs = coletar_logs(LINHAS_LOGS)
+        logs = coletar_logs(100)
         for log in logs:
             salvar_sqlite_logs(log)
             enviar_logs_para_supabase(log)
         print(f"{len(logs)} logs coletados e enviados.")
 
         clean_logs_data()
-        time.sleep(INTERVALO_LOGS)
+        time.sleep(3000)
 
-def rotina_trafego():
+def rotina_trafego(horarios):
     while True:
         pacotes = classificar_trafego()
         for pacote in pacotes:
@@ -52,24 +80,36 @@ def rotina_trafego():
         print(f" {len(pacotes)} pacotes classificados e enviados.")
 
         clean_trafego_data()
-        time.sleep(INTERVALO_TRAF)
+        time.sleep(6000)
 
 def main():
-    criar_tabela_speedTest()
-    criar_tabela_logs()
-    criar_tabela_trafego()
+    email = input("Digite seu e-mail: ")
+    senha = input("Digite sua senha: ")
 
-    t1 = threading.Thread(target=rotina_speedtest)
-    t2 = threading.Thread(target=rotina_logs)
-    t3 = threading.Thread(target=rotina_trafego)
+    autenticado, horarios = verificar_usuario(email, senha)
 
-    t1.start()
-    t2.start()
-    t3.start()
+    if autenticado:
+        print("Usuário autenticado com sucesso!")
+        print(f"Horários cadastrados: {horarios}")
 
-    t1.join()
-    t2.join()
-    t3.join()
+        criar_tabela_speedTest()
+        criar_tabela_logs()
+        criar_tabela_trafego()
+
+        t1 = threading.Thread(target=rotina_speedtest, args=(horarios,))
+        t2 = threading.Thread(target=rotina_logs, args=(horarios,))
+        t3 = threading.Thread(target=rotina_trafego, args=(horarios,))
+
+        t1.start()
+        t2.start()
+        t3.start()
+
+        t1.join()
+        t2.join()
+        t3.join()
+
+    else:
+        print("Usuário ou senha incorretos. Tente novamente.")
 
 if __name__ == "__main__":
     main()
