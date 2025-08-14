@@ -1,6 +1,7 @@
 import time
 import threading
 import requests
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,8 +30,12 @@ INTERVALO_LOGS = 3000
 INTERVALO_TRAF = 6000
 LINHAS_LOGS = 100
 
-def verificar_usuario(email, senha):
-    url = f"{SUPABASE_URL}/rest/v1/usuarios?email=eq.{email}&senha=eq.{senha}"
+from urllib.parse import quote
+
+def verificar_usuario(email):
+    email_encoded = quote(email)
+
+    url = f"{SUPABASE_URL}/rest/v1/usuarios?email=eq.{email_encoded}&limit=1"
     headers = {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",
@@ -42,12 +47,17 @@ def verificar_usuario(email, senha):
     if response.status_code == 200:
         usuarios = response.json()
         if usuarios:
-            horarios = usuarios[0]["horario1"], usuarios[0]["horario2"], usuarios[0]["horario3"]
+            horarios = (
+                usuarios[0]["horario1"],
+                usuarios[0]["horario2"],
+                usuarios[0]["horario3"]
+            )
             return True, horarios
         else:
             return False, None
     else:
-        print(f"Erro ao buscar usuário: {response.status_code}")
+        print(f"URL chamada: {url}")
+        print(f"Erro ao buscar usuário: {response.status_code} - {response.text}")
         return False, None
 
 def rotina_speedtest(horarios):
@@ -84,9 +94,8 @@ def rotina_trafego(horarios):
 
 def main():
     email = input("Digite seu e-mail: ")
-    senha = input("Digite sua senha: ")
 
-    autenticado, horarios = verificar_usuario(email, senha)
+    autenticado, horarios = verificar_usuario(email)
 
     if autenticado:
         print("Usuário autenticado com sucesso!")
@@ -109,7 +118,8 @@ def main():
         t3.join()
 
     else:
-        print("Usuário ou senha incorretos. Tente novamente.")
+        print("Usuário não encontrado. Tente novamente.")
 
 if __name__ == "__main__":
     main()
+
